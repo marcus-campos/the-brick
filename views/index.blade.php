@@ -72,7 +72,7 @@
                             <ul>
                             @if(!empty($route->params))
                                 @foreach($route->params as $key => $value)
-                                    <li>{{ $value }}</li>
+                                    <li><strong>{{$key}}:</strong>  {{ $value }}</li>
                                 @endforeach
                             @endif
                             </ul>
@@ -102,7 +102,7 @@
                                             <ul>
                                             @if(!empty($filter->params))
                                                 @foreach($filter->params as $key => $value)
-                                                    <li>{{ $value }}</li>
+                                                    <li><strong>{{$key}}:</strong> {{ $value }}</li>
                                                 @endforeach
                                             @endif
                                             </ul>
