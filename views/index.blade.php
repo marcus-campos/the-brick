@@ -60,22 +60,55 @@
                 </div>
                 <div id="collapse{{ $key }}" class="panel-collapse collapse">
                     <div class="panel-body">
-                        {{ !empty($route->description) ? $route->description : 'Without description' }}
-                    </div>
-                    <div class="panel-body">
-                        <p><strong>Filtros: </strong></p>
+                        <h4>
+                            <strong>{{ !empty($route->summary) ? $route->summary : 'Without summary' }}</strong>
+                        </h4>
+                        <br>
+                        <p>
+                            {{ !empty($route->description) ? $route->description : 'Without description' }}
+                        </p>
+                        <h5><strong>Params: </strong></h5>
+                        <p>
+                            <ul>
+                            @if(!empty($route->params))
+                                @foreach($route->params as $key => $value)
+                                    <li>{{ $value }}</li>
+                                @endforeach
+                            @endif
+                            </ul>
+                        </p>
+                        <h5><strong>Return: </strong> {{ !empty($route->return) ? $route->return : 'Without return' }}</h5>
+                        <h5><strong>Filtros: </strong></h5>
                         @foreach($route->filters as $filter)
                         <div class="panel panel-default" style="margin-bottom: 5px;">
                             <div class="panel-heading">
-                                <h4 class="panel-title">
+                                <h5 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion" class="nounderline" href="#collapsec{{ $uniqid = uniqid() }}">
                                         {{ $filter->name }}
                                     </a>
-                                </h4>
+                                </h5>
                             </div>
                             <div id="collapsec{{ $uniqid }}" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                    <div class="panel-body">{{ !empty($filter->description) ? $filter->description : 'Without description' }}</div>
+                                    <div class="panel-body">
+                                        <h4><strong>{{ !empty($filter->summary) ? $filter->summary : 'Without summary' }}</strong></h4>
+                                        <br>
+                                        <p>
+                                            {{ !empty($filter->description) ? $filter->description : 'Without description' }}
+                                        </p>
+                                        <hr>
+                                        <h5><strong>Params: </strong></h5>
+                                        <p>
+                                            <ul>
+                                            @if(!empty($filter->params))
+                                                @foreach($filter->params as $key => $value)
+                                                    <li>{{ $value }}</li>
+                                                @endforeach
+                                            @endif
+                                            </ul>
+                                        </p>
+                                        <h5><strong>Return: </strong> {{ !empty($filter->return) ? $filter->return : 'Without return' }}</h5>
+                                    </div>
                                 </div>
                             </div>
                         </div>

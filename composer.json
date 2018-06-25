@@ -7,6 +7,10 @@
         {
             "name": "Bruno Coelho",
             "email": "bruno.coelho@sympla.com.br"
+        },
+	{
+            "name": "Marcus Campos",
+            "email": "marcus.campos@sympla.com.br"
         }
     ],
     "require": {

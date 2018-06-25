@@ -2,6 +2,8 @@
 
 namespace Sympla\Search\DocGen;
 
+use Sympla\Search\DocGen\DocParser;
+
 class Generator
 {
 
@@ -39,6 +41,8 @@ class Generator
     {
         foreach ($this->allRoutes as $route) {
             $docArray = [];
+            $docParser = null;
+            $filterDocParser = null;
 
             if ($route->getAction()['uses'] != '' && is_string($route->getAction()['uses'])) {
                 $uses = explode('@', $route->getAction()['uses']);
@@ -47,26 +51,31 @@ class Generator
                 if (class_exists($class)) {
                     $class = $this->getReflectionClass($class);
                     if ($class->hasMethod($uses[1])) {
-                        $docArray = $this->parseDoc($class
-                                ->getMethod($uses[1])
-                                ->getDocComment()
-                            ) ?? [];
+                        $docParser = new DocParser($class->getMethod($uses[1])->getDocComment());
+                        $parsedDoc = $docParser->get();
                     }
                 }
 
-                if (isset($docArray['negotiate'])) {
-                    $class = $docArray['negotiate'];
+                if (!empty($docParser) && $docParser->getTagValue('negotiate')) {
+
+                    $class = $docParser->getTagValue('negotiate');
                     $class = $this->getReflectionClass(
-                        (config('the-brick-search.namespace_prefix') ?? 'App\\').$class
+                        (config('the-brick-search.models.namespace_prefix') ?? 'App\\').$class
                     );
+
                     $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
                     $filters = [];
 
                     foreach ($methods as $method) {
                         if (strpos($method->name, 'scope') !== false) {
+                            $filterDocParser = new DocParser($method->getDocComment());
+
                             $filters[] =  [
                                 'name' => lcfirst(str_replace('scope', '', $method->name)),
-                                'description' => $this->parseDoc($method->getDocComment())['negotiateDesc'] ?? ''
+                                'summary' => $filterDocParser->getShortDesc(),
+                                'description' => $filterDocParser->getLongDesc(),
+                                'params' => $filterDocParser->getTagsIfCointansString('param'),
+                                'return' => $filterDocParser->getTagValue('return')
                             ];
                         }
                     }
@@ -75,7 +84,9 @@ class Generator
                         'route' => $route->getPath(),
                         'methods' => $route->getMethods(),
                         'uses' => $route->getAction()['uses'],
-                        'description' => $docArray['negotiateDesc'] ?? '',
+                        'summary' => $docParser->getShortDesc(),
+                        'description' => $docParser->getLongDesc(),
+                        'params' => $docParser->getTagsIfCointansString('param'),
                         'filters' => $filters
                     ];
                 }
@@ -93,16 +104,5 @@ class Generator
     private function getReflectionClass($class)
     {
         return new \ReflectionClass($class);
-    }
-
-    private function parseDoc($str)
-    {
-        $result = null;
-
-        if (preg_match_all('/@(\w+)\s+(.*)\r?\n/m', $str, $matches)) {
-            $result = array_combine($matches[1], $matches[2]);
-        }
-
-        return $result;
     }
 }
