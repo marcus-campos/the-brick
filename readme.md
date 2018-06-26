@@ -10,9 +10,6 @@ Install the package using composer:
 
     $ composer require sympla/the-brick ~1.0
 
-Publish the package configuration:
-	$ php artisan vendor:publish --provider="Sympla\Search\Search\SearchServiceProvider"
-
 That's it.
 
 ## Simple usage
@@ -52,10 +49,34 @@ Sympla\Search\Search\SearchServiceProvider::class,
 
 ## Generating documentation
 
+#### Documentation
+
+```php
+/**
+ * This is a summary
+ *
+ * This is a description
+ */
+
+/**
+ * This is a summary.
+ * This is a description
+ */
+
+/**
+ * @param1 this is param1.
+ * @param2 this is param2.
+ * @param3 this is param3.
+ */
+
+/**
+ * @return this is a return.
+ */
+```
+
 #### Docblock variables
 
 * @negotiate : Informs which model the deal is using
-* @negotiateDesc : Description of method/filter
 
 ### How use
 
@@ -64,9 +85,12 @@ Add to your docblock the documentation variables
 #### Controller
 ```php
 /**
+ * Get and filter all users
+ * 
  * @negotiate Models\User
- * @negotiateDesc Get and filter all users 
-*/ 
+ * @param1 Request $request
+ * @return Json 
+ */ 
 public function index(Request $request)
 {
     $res = $res->negotiate('Models\User');
@@ -77,7 +101,10 @@ public function index(Request $request)
 #### Model
 ```php
 /**
- * @negotiateDesc Get users with phones
+ * Get users with phones
+ *
+ * @param1 $query
+ * @return Json
  */
 public function scopeFilterByPhone($query)
 {
@@ -87,8 +114,11 @@ public function scopeFilterByPhone($query)
 
 #### Generate the documentation
 
-Execute the negotiate docgen command
-	$ php artisan negotiate:docgen
+Execute this command
+
+```bash
+php artisan negotiate:docgen
+```
 
 #### Accessing the Documentation
 
